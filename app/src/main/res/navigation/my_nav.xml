@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_university_list">
         <action
             android:id="@+id/action_universityListFragment_to_university_detail_fragment"
-            app:destination="@id/university_detail_fragment" />
+            app:destination="@id/university_detail_fragment"
+            app:popUpToInclusive="true"
+           />
     </fragment>
     <fragment
         android:id="@+id/university_detail_fragment"

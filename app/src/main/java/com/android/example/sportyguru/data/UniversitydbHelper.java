@@ -24,15 +24,15 @@ public class UniversitydbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("CREATE TABLE " + UNIVERSITY_TABLE_NAME+ " (" +
+        sqLiteDatabase.execSQL("CREATE TABLE " + UNIVERSITY_TABLE_NAME + " (" +
                 UNIVERSITY_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 UNIVERSITY_NAME + " TEXT, " +
                 UNIVERSITY_STATE_PROVINCE + " TEXT, " +
-                UNIVERSITY_COUNTRY + " TEXT, "+
-                UNIVERSITY_WEB_PAGE + " TEXT, "+
-                UNIVERSITY_DOMAIN_NAME + " TEXT, "+
+                UNIVERSITY_COUNTRY + " TEXT, " +
+                UNIVERSITY_WEB_PAGE + " TEXT, " +
+                UNIVERSITY_DOMAIN_NAME + " TEXT, " +
                 UNIVERSITY_CODE + " TEXT ," +
-                UNIVERSITY_ADDRESS +"TEXT "
+                UNIVERSITY_ADDRESS + " EXT "
                 + ")");
     }
 

@@ -1,17 +1,15 @@
 package com.android.example.sportyguru;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,11 +19,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -35,12 +30,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.example.sportyguru.data.UniversitydbHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -83,7 +76,8 @@ public class UniversityListFragment extends Fragment implements GoogleApiClient.
         ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
-         isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
         if(mUniversityList == null){
             mUniversityList = new ArrayList<>();}
         loadingIndicator=view.findViewById(R.id.progress);
@@ -103,42 +97,34 @@ public class UniversityListFragment extends Fragment implements GoogleApiClient.
         });
 
         mRecyclerView.setAdapter(mUniversityAdapter);
-        if(!isConnected){
+
+    }
+    public void gettingdata(){
+        if(isConnected){
+            mFetchData.execute(url);
+        }else{
             mUniversityList.clear();
             mUniversityList.addAll(readFromDB());
             mUniversityAdapter.notifyDataSetChanged();
-        }else{
-            if(mFetchData.getStatus() != AsyncTask.Status.RUNNING &&!country.equals("")){
-                mFetchData.execute(url);
-            }
-        }
+            loadingIndicator.setVisibility(View.INVISIBLE);
 
-        if(!country.equals("")&&mUniversityList.size()!=0){
-            loadingIndicator.setVisibility(View.GONE);
         }
-
     }
-
     @Override
     public void onConnected(Bundle bundle) {
         if(!country.equals("")){
+            loadingIndicator.setVisibility(View.INVISIBLE);
+
             return;
         }
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        ActivityCompat.requestPermissions(getActivity() , new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
             return;
         } startLocationUpdates();
         mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if(mLocation == null){
             startLocationUpdates();
-        }
-        if (mLocation != null) {
+        }if (mLocation != null) {
             Geocoder gcd = new Geocoder(getContext(), Locale.getDefault());
             List<Address> addresses = null;
             try {
@@ -149,12 +135,8 @@ public class UniversityListFragment extends Fragment implements GoogleApiClient.
 
             if (addresses.size() > 0) {
                 country = addresses.get(0).getCountryName();
-                Toast.makeText(getContext(), "Your Current Location is " + country, Toast.LENGTH_SHORT).show();
                 url = url + country;
-
-                if(mFetchData.getStatus() != AsyncTask.Status.RUNNING && isConnected){
-                        mFetchData.execute(url);
-                }
+                gettingdata();
                 Log.e("Country", country);
 
             }
@@ -195,6 +177,11 @@ public class UniversityListFragment extends Fragment implements GoogleApiClient.
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         if (mGoogleApiClient.isConnected()) {
@@ -208,17 +195,19 @@ public class UniversityListFragment extends Fragment implements GoogleApiClient.
 
     private void saveToDB(University university) {
         SQLiteDatabase database = new UniversitydbHelper(getContext()).getWritableDatabase();
+
         ContentValues values = new ContentValues();
-        values.put(UniversitydbHelper.UNIVERSITY_NAME,university.getUniversity_Name());
-        values.put(UniversitydbHelper.UNIVERSITY_STATE_PROVINCE,university.getUniversity_State_Province());
-        values.put(UniversitydbHelper.UNIVERSITY_COUNTRY,university.getUniversity_country());
-        values.put(UniversitydbHelper.UNIVERSITY_WEB_PAGE,university.getUniversity_Web_Page());
-        values.put(UniversitydbHelper.UNIVERSITY_DOMAIN_NAME,university.getUniversityDomainName());
-        values.put(UniversitydbHelper.UNIVERSITY_CODE,university.getUniversityCode());
-        values.put(UniversitydbHelper.UNIVERSITY_ADDRESS,university.getUniversity_Address());
+        values.put(UniversitydbHelper.UNIVERSITY_NAME, university.getUniversity_Name());
+        values.put(UniversitydbHelper.UNIVERSITY_STATE_PROVINCE, university.getUniversity_State_Province());
+        values.put(UniversitydbHelper.UNIVERSITY_COUNTRY, university.getUniversity_country());
+        values.put(UniversitydbHelper.UNIVERSITY_WEB_PAGE, university.getUniversity_Web_Page());
+        values.put(UniversitydbHelper.UNIVERSITY_DOMAIN_NAME, university.getUniversityDomainName());
+        values.put(UniversitydbHelper.UNIVERSITY_CODE, university.getUniversityCode());
+        values.put(UniversitydbHelper.UNIVERSITY_ADDRESS, university.getUniversity_Address());
 
-        database.insert(UniversitydbHelper.UNIVERSITY_TABLE_NAME, null, values);
-
+        long value = database.insert(UniversitydbHelper.UNIVERSITY_TABLE_NAME, null, values);
+        Log.d(TAG, "Enter value in database" + value);
+        database.close();
     }
 
     private  ArrayList <University> readFromDB() {
@@ -269,6 +258,7 @@ public class UniversityListFragment extends Fragment implements GoogleApiClient.
                 result.add(university);
             }while (cursor.moveToNext());
         }
+        database.close();
         return result;
 
 
@@ -279,15 +269,18 @@ public class UniversityListFragment extends Fragment implements GoogleApiClient.
         @Override
         protected String doInBackground(String... strings) {
 
-                mUniversityList.clear();
-                mUniversityList.addAll((ArrayList<University>) mAPIQueryUtils.extractUniversity(strings[0]));
-                int lastI = mUniversityList.size();
-                if(mUniversityList.size()>20){
-                    lastI = 20;
-                }
-                for(int i =0 ; i < lastI ; i++){
-                    saveToDB(mUniversityList.get(i));
-                }
+            mUniversityList.clear();
+            mUniversityList.addAll((ArrayList<University>) mAPIQueryUtils.extractUniversity(strings[0]));
+            int lastI = mUniversityList.size();
+            SQLiteDatabase database = new UniversitydbHelper(getContext()).getWritableDatabase();
+            database.delete(UniversitydbHelper.UNIVERSITY_TABLE_NAME, null, null);
+            database.close();
+            if (mUniversityList.size() > 20) {
+                lastI = 20;
+            }
+            for (int i = 0; i < lastI; i++) {
+                saveToDB(mUniversityList.get(i));
+            }
 
 
             return null;
@@ -295,7 +288,7 @@ public class UniversityListFragment extends Fragment implements GoogleApiClient.
 
         @Override
         protected void onPostExecute(String s) {
-            loadingIndicator.setVisibility(View.GONE);
+            loadingIndicator.setVisibility(View.INVISIBLE);
             mUniversityAdapter.notifyDataSetChanged();
         }
     }
