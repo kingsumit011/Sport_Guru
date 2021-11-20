@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_nav"
+    app:startDestination="@id/universityListFragment">
+
+    <fragment
+        android:id="@+id/universityListFragment"
+        android:name="com.android.example.sportyguru.UniversityListFragment"
+        android:label="fragment_university_list"
+        tools:layout="@layout/fragment_university_list">
+        <action
+            android:id="@+id/action_universityListFragment_to_university_detail_fragment"
+            app:destination="@id/university_detail_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/university_detail_fragment"
+        android:name="com.android.example.sportyguru.University_detail_fragment"
+        android:label="fragment_university_detail_fragment"
+        tools:layout="@layout/fragment_university_detail_fragment">
+        <action
+            android:id="@+id/action_university_detail_fragment_to_universityListFragment"
+            app:destination="@id/universityListFragment" />
+    </fragment>
+</navigation>

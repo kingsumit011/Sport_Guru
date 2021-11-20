@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/SportyGuru/app/src/main/res/drawable/rectangle_round_boarder.xml" value="0.25833333333333336" />
+        <entry key="..\:/SportyGuru/app/src/main/res/layout/activity_main.xml" value="0.228125" />
+        <entry key="..\:/SportyGuru/app/src/main/res/layout/fragment_university_detail_fragment.xml" value="0.264" />
+        <entry key="..\:/SportyGuru/app/src/main/res/layout/fragment_university_detail_ragment.xml" value="0.2421875" />
+        <entry key="..\:/SportyGuru/app/src/main/res/layout/fragment_university_list.xml" value="0.2" />
+        <entry key="..\:/SportyGuru/app/src/main/res/layout/university_list_item.xml" value="0.2421875" />
+        <entry key="..\:/SportyGuru/app/src/main/res/xml/network_config_file.xml" value="0.2265625" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
